@@ -1,0 +1,13 @@
+fastapi==0.141.1
+uvicorn==0.44.0
+SQLAlchemy==2.1.4
+pydantic==2.13.4
+PyJWT==2.13.0
+bcrypt==5.0.0
+pypdf==5.9.0
+python-docx==1.2.0
+numpy==2.5.3
+jieba==0.42.1
+httpx==0.28.1
+python-multipart==0.0.21
+pytest==9.1.1
