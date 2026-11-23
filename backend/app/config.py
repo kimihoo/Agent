@@ -29,13 +29,15 @@ TOKEN_TTL_HOURS = int(os.environ.get("TOKEN_TTL_HOURS", "12"))
 LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "").rstrip("/")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
 LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-4o-mini")
+# 本地推理服务（如 Ollama）通常不需要密钥，只要有地址即启用
+LLM_TIMEOUT = int(os.environ.get("LLM_TIMEOUT", "300"))
 
 EMBEDDING_BASE_URL = os.environ.get("EMBEDDING_BASE_URL", LLM_BASE_URL).rstrip("/")
 EMBEDDING_API_KEY = os.environ.get("EMBEDDING_API_KEY", LLM_API_KEY)
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "text-embedding-3-small")
 EMBEDDING_DIM = int(os.environ.get("EMBEDDING_DIM", "512"))
 
-LLM_ENABLED = bool(LLM_BASE_URL and LLM_API_KEY)
+LLM_ENABLED = bool(LLM_BASE_URL)
 EMBEDDING_ENABLED = bool(EMBEDDING_BASE_URL and EMBEDDING_API_KEY)
 
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", "480"))

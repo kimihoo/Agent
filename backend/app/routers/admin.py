@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from ..config import LLM_ENABLED
 from ..db import get_db
 from ..models import AuditLog, Chunk, Contract, Document, KnowledgeBase, User
 from ..schemas import UserIn, UserPatch
@@ -104,7 +105,7 @@ def system_status(db: Session = Depends(get_db), _user: User = Depends(get_curre
     ).all())
     return {
         "llm": provider_name(),
-        "llm_enabled": provider_name().startswith("openai"),
+        "llm_enabled": LLM_ENABLED,
         "embedding": backend_name(),
         "stats": {
             "users": db.scalar(select(func.count(User.id))) or 0,

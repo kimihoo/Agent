@@ -123,7 +123,8 @@ start.sh               # 一键启动
 | `DB_PATH` | `DATA_DIR/app.db` | SQLite 路径 |
 | `SECRET_KEY` | 自动生成并持久化 | JWT 密钥 |
 | `TOKEN_TTL_HOURS` | `12` | 登录有效期 |
-| `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` | 空 / 空 / `gpt-4o-mini` | OpenAI 兼容对话接口；留空使用本地回答 |
+| `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` | 空 / 空 / `gpt-4o-mini` | OpenAI 兼容对话接口；`LLM_API_KEY` 可留空（Ollama 等本地服务），`LLM_BASE_URL` 留空则使用本地回答 |
+| `LLM_TIMEOUT` | `300` | 大模型请求超时（秒），本地 CPU 推理可适当调大 |
 | `EMBEDDING_BASE_URL` / `EMBEDDING_API_KEY` / `EMBEDDING_MODEL` | 跟随 LLM | 向量接口；留空使用本地向量 |
 | `EMBEDDING_DIM` | `512` | 本地哈希向量维度 |
 | `CHUNK_SIZE` / `CHUNK_OVERLAP` | `480` / `80` | 切片长度与重叠 |
@@ -138,6 +139,23 @@ export LLM_MODEL=gpt-4o-mini
 export EMBEDDING_MODEL=text-embedding-3-small
 ./start.sh
 ```
+
+### 接入本地大模型（Ollama）
+
+```bash
+# 1. 在模型所在机器启动 Ollama 并拉取模型
+ollama pull qwen2.5:7b-instruct
+ollama serve                       # 默认监听 127.0.0.1:11434
+
+# 2. 在与项目同机启动时
+export LLM_BASE_URL=http://127.0.0.1:11434/v1
+export LLM_MODEL=qwen2.5:7b-instruct
+./start.sh
+```
+
+- 本地 OpenAI 兼容服务可不设置 `LLM_API_KEY`；只要 `LLM_BASE_URL` 非空即启用大模型。
+- 仅切换对话模型时向量仍使用本地哈希，无需重建索引；启动后在「系统管理」可看到“大模型已连接”。
+- 若 Ollama 在另一台机器，将 `127.0.0.1` 换成该机器可达 IP，并确保 11434 端口可访问。
 
 ## 测试
 

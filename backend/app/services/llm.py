@@ -7,7 +7,7 @@ from collections.abc import Iterator
 
 import httpx
 
-from ..config import LLM_API_KEY, LLM_BASE_URL, LLM_ENABLED, LLM_MODEL
+from ..config import LLM_API_KEY, LLM_BASE_URL, LLM_ENABLED, LLM_MODEL, LLM_TIMEOUT
 from .embedding import tokenize
 from .retrieval import Hit, _expand_query
 
@@ -47,11 +47,12 @@ def _openai_stream(messages: list[dict], temperature: float = 0.2) -> Iterator[s
         "temperature": temperature,
         "stream": True,
     }
-    with httpx.Client(timeout=120) as client:
+    headers = {"Authorization": f"Bearer {LLM_API_KEY}"} if LLM_API_KEY else {}
+    with httpx.Client(timeout=LLM_TIMEOUT) as client:
         with client.stream(
             "POST",
             f"{LLM_BASE_URL}/chat/completions",
-            headers={"Authorization": f"Bearer {LLM_API_KEY}"},
+            headers=headers,
             json=payload,
         ) as response:
             response.raise_for_status()
@@ -77,10 +78,11 @@ def chat_completion(messages: list[dict], temperature: float = 0.0) -> str:
         "messages": messages,
         "temperature": temperature,
     }
-    with httpx.Client(timeout=120) as client:
+    headers = {"Authorization": f"Bearer {LLM_API_KEY}"} if LLM_API_KEY else {}
+    with httpx.Client(timeout=LLM_TIMEOUT) as client:
         response = client.post(
             f"{LLM_BASE_URL}/chat/completions",
-            headers={"Authorization": f"Bearer {LLM_API_KEY}"},
+            headers=headers,
             json=payload,
         )
         response.raise_for_status()
